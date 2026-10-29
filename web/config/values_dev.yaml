@@ -1,0 +1,27 @@
+# Exemplo de contrato do template; validar o schema do chart corporativo.
+# Os marcadores e dominios .example.invalid devem ser substituidos antes do deploy.
+appFramework: react
+ingress:
+  enabled: true
+  contextURL: /react-ssr-corp-srep-pop-map
+  host: replace-dev-host.example.invalid
+namespace: corp-srep
+containerPort: 3000
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  targetMemoryUtilizationPercentage: 70
+enable_secrets: true
+secrets:
+  NEXTAUTH_SECRET: REPLACE_WITH_CORPORATE_SECRET_REFERENCE
+  KEYCLOAK_CLIENT_SECRET: REPLACE_WITH_CORPORATE_SECRET_REFERENCE
+configmap:
+  profile: dev
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
+  API_URL: https://replace-dev-api.example.invalid/sboot-corp-srep-pop-map-service
+  KEYCLOAK_CLIENT_ID: REPLACE_WITH_OIDC_CLIENT_ID
+  KEYCLOAK_ISSUER: https://replace-dev-sso.example.invalid/realms/REPLACE_WITH_REALM
+  NEXTAUTH_URL: https://replace-dev-host.example.invalid/react-ssr-corp-srep-pop-map/api/auth
+  # Convencao do template; exige implementacao de logout federado.
+  NEXTAUTH_LOGOUT: https://replace-dev-sso.example.invalid/realms/REPLACE_WITH_REALM/protocol/openid-connect/logout

@@ -1,0 +1,26 @@
+# Exemplo de contrato, nao um manifesto de producao pronto.
+# Validar autenticacao, autorizacao, referencias de segredo, chart, probes e pipeline.
+appFramework: react
+ingress:
+  enabled: true
+  contextURL: /react-ssr-corp-srep-pop-map
+  host: replace-prd-host.example.invalid
+namespace: corp-srep
+containerPort: 3000
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  targetMemoryUtilizationPercentage: 70
+enable_secrets: true
+secrets:
+  NEXTAUTH_SECRET: REPLACE_WITH_CORPORATE_SECRET_REFERENCE
+  KEYCLOAK_CLIENT_SECRET: REPLACE_WITH_CORPORATE_SECRET_REFERENCE
+configmap:
+  profile: prd
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
+  API_URL: https://replace-prd-api.example.invalid/sboot-corp-srep-pop-map-service
+  KEYCLOAK_CLIENT_ID: REPLACE_WITH_OIDC_CLIENT_ID
+  KEYCLOAK_ISSUER: https://replace-prd-sso.example.invalid/realms/REPLACE_WITH_REALM
+  NEXTAUTH_URL: https://replace-prd-host.example.invalid/react-ssr-corp-srep-pop-map/api/auth
+  NEXTAUTH_LOGOUT: https://replace-prd-sso.example.invalid/realms/REPLACE_WITH_REALM/protocol/openid-connect/logout

@@ -1,0 +1,109 @@
+{
+  "policyVersion": "pilot-0.1",
+  "status": "PROPOSED_NOT_TENANT_VALIDATED",
+  "defaultObjective": "PERFORMANCE_RESILIENCE",
+  "time": {
+    "maxWallClockSeconds": 750,
+    "maxActiveSeconds": 120,
+    "maxQueuedSeconds": 30,
+    "maxInputWaitSeconds": 600,
+    "maxInputWaits": 1,
+    "maxRemoteOperationSeconds": 20,
+    "maxQueryLifetimeSeconds": 30,
+    "maxCancellationGraceSeconds": 5,
+    "maxMcpStageSeconds": 30,
+    "watchdogIntervalSeconds": 5,
+    "leaseSeconds": 15,
+    "leaseRenewalSeconds": 5
+  },
+  "work": {
+    "maxProviderHttpRequests": 60,
+    "reservedCleanupRequests": 4,
+    "maxQueryExecutions": 6,
+    "maxMcpToolInvocations": 2,
+    "maxPollRequestsPerQuery": 10,
+    "pollIntervalMinSeconds": 2,
+    "pollIntervalMaxSeconds": 5,
+    "maxAdditionalRetriesPerEligibleOperation": 1,
+    "retryUnknownOutcome": false,
+    "maxResultBytesPerQuery": 5242880,
+    "maxLocalDecompressedResponseBytes": 8388608,
+    "maxMcpDecompressedResponseBytes": 1048576,
+    "maxEnrichmentInputBytes": 32768,
+    "maxRecordsPerQuery": 1000
+  },
+  "scan": {
+    "ledgerUnit": "BYTES",
+    "maxTelemetryBytesPerRun": 500000000,
+    "maxTelemetryBytesPerFetch": 100000000,
+    "requireValidatedProviderUnitConversion": true,
+    "providerBytesPerScanLimitUnit": null,
+    "providerFractionalScanLimitValidated": false,
+    "countAllSubqueryFetches": true,
+    "allowUnlimitedFetch": false,
+    "arbitraryGeneratedDqlEnabled": false
+  },
+  "graph": {
+    "maxNodes": 500,
+    "maxEdges": 1000,
+    "maxCallsDepth": 2,
+    "maxInfrastructureSteps": 2,
+    "maxInitiallyVisibleNodes": 200
+  },
+  "concurrency": {
+    "maxRunsPerEnvironment": 2,
+    "maxApiQueriesPerEnvironment": 2,
+    "maxMcpToolsPerEnvironment": 1,
+    "maxRunsPerUser": 1,
+    "distributedAdmissionRequired": true
+  },
+  "mcp": {
+    "enabledWhenCapabilitiesValidated": true,
+    "maxClientContextsPerReplica": 16,
+    "idleClientTtlSeconds": 600,
+    "toolCatalogTtlSeconds": 900,
+    "requireApprovedSchemaHash": true,
+    "requireBoundedInternalConsumption": true,
+    "allowAgenticOperator": false,
+    "generativeToolsEnabled": false,
+    "aiUnitsPerRun": null,
+    "currencyBudgetPerRun": null,
+    "rateCardVersion": null,
+    "unconfiguredGenerativeBudgetBehavior": "SKIP_WITH_REASON"
+  },
+  "cacheTtlSeconds": {
+    "urlBinding": 86400,
+    "topology": 900,
+    "routeEvidence": 300,
+    "health": 120,
+    "opportunity": 21600,
+    "queryResult": 300,
+    "negativeResolution": 120,
+    "capabilities": 3600
+  },
+  "breaker": {
+    "consecutiveFailures": 5,
+    "failureWindowSeconds": 60,
+    "openSeconds": 30,
+    "halfOpenConcurrentProbes": 1
+  },
+  "retentionDays": {
+    "searchSessionsAndSnapshots": 90,
+    "progressEvents": 7,
+    "sanitizedEvidencePayloads": 7,
+    "costAndSecurityAudit": 180
+  },
+  "environmentDailyQuota": {
+    "providerHttpRequests": 2000,
+    "telemetryScanBytes": 10000000000,
+    "mcpToolInvocations": 100,
+    "aiUnits": null,
+    "resetTimezone": "UTC"
+  },
+  "security": {
+    "shareAcrossVisibilityScopes": false,
+    "fetchUserProvidedUrl": false,
+    "sendRawLogsToEnrichment": false,
+    "readOnlyProviderOperations": true
+  }
+}

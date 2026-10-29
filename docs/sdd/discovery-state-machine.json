@@ -1,0 +1,42 @@
+{
+  "machine": "DiscoveryRun",
+  "version": "0.1",
+  "initial": "QUEUED",
+  "terminal": ["SUCCEEDED", "PARTIAL", "FAILED", "TIMED_OUT", "CANCELLED"],
+  "states": ["QUEUED", "RUNNING", "WAITING_INPUT", "CANCELLING", "SUCCEEDED", "PARTIAL", "FAILED", "TIMED_OUT", "CANCELLED"],
+  "phases": ["RESTORE_BASELINE", "RESOLVE_TARGET", "PLAN_REFRESH", "FETCH_TOPOLOGY", "VALIDATE_ROUTE", "FETCH_HEALTH", "ENRICH_GAPS", "PUBLISH_SNAPSHOT"],
+  "stepStates": ["PENDING", "RUNNING", "SUCCEEDED", "REUSED", "SKIPPED", "FAILED", "CANCELLED"],
+  "transitions": [
+    {"from": "QUEUED", "event": "LEASE_ACQUIRED", "to": "RUNNING", "guard": "authorizedAndBudgetReservedAndBeforeDeadline"},
+    {"from": "RUNNING", "event": "SELECTION_REQUIRED", "to": "WAITING_INPUT", "guard": "noRemoteOperationActiveAndInputWaitAvailable"},
+    {"from": "WAITING_INPUT", "event": "CANDIDATE_SELECTED", "to": "QUEUED", "guard": "authorizedCandidateAndBeforeInputDeadlineAndBeforeAbsoluteDeadline"},
+    {"from": "RUNNING", "event": "PLAN_SATISFIED", "to": "SUCCEEDED", "guard": "allPromisedCoverageSatisfiedIncludingEnabledEnrichmentAndNoMaterialPlanLimitation"},
+    {"from": "RUNNING", "event": "INCOMPLETE", "to": "PARTIAL", "guard": "hasUsableSnapshot"},
+    {"from": "RUNNING", "event": "ERROR", "to": "FAILED", "guard": "noUsableSnapshot"},
+    {"from": "QUEUED", "event": "BUDGET_REJECTED", "to": "PARTIAL", "guard": "hasUsableSnapshot"},
+    {"from": "QUEUED", "event": "BUDGET_REJECTED", "to": "FAILED", "guard": "noUsableSnapshot"},
+    {"from": "RUNNING", "event": "BUDGET_REJECTED", "to": "PARTIAL", "guard": "hasUsableSnapshot"},
+    {"from": "RUNNING", "event": "BUDGET_REJECTED", "to": "FAILED", "guard": "noUsableSnapshot"},
+    {"from": "RUNNING", "event": "LIMIT_REACHED", "to": "PARTIAL", "guard": "hasUsableSnapshot"},
+    {"from": "RUNNING", "event": "LIMIT_REACHED", "to": "FAILED", "guard": "noUsableSnapshot"},
+    {"from": "QUEUED", "event": "DEADLINE_EXCEEDED", "to": "PARTIAL", "guard": "hasUsableSnapshot"},
+    {"from": "WAITING_INPUT", "event": "DEADLINE_EXCEEDED", "to": "PARTIAL", "guard": "hasUsableSnapshot"},
+    {"from": "RUNNING", "event": "DEADLINE_EXCEEDED", "to": "PARTIAL", "guard": "hasUsableSnapshot"},
+    {"from": "QUEUED", "event": "DEADLINE_EXCEEDED", "to": "TIMED_OUT", "guard": "noUsableSnapshot"},
+    {"from": "WAITING_INPUT", "event": "DEADLINE_EXCEEDED", "to": "TIMED_OUT", "guard": "noUsableSnapshot"},
+    {"from": "RUNNING", "event": "DEADLINE_EXCEEDED", "to": "TIMED_OUT", "guard": "noUsableSnapshot"},
+    {"from": "QUEUED", "event": "CANCEL_RUN", "to": "CANCELLING", "guard": "noActiveSubscribersOrAdministrativeStop"},
+    {"from": "RUNNING", "event": "CANCEL_RUN", "to": "CANCELLING", "guard": "noActiveSubscribersOrAdministrativeStop"},
+    {"from": "WAITING_INPUT", "event": "CANCEL_RUN", "to": "CANCELLING", "guard": "noActiveSubscribersOrAdministrativeStop"},
+    {"from": "CANCELLING", "event": "CANCELLATION_SETTLED", "to": "CANCELLED", "guard": "remoteConfirmedOrLocalCancellationDeadlineReached"}
+  ],
+  "deadlineKinds": ["QUEUE", "INPUT", "ACTIVE", "ABSOLUTE"],
+  "invariants": [
+    "Terminal states never transition back to active states",
+    "Human input does not hold a worker lease or remote request",
+    "Retries and reconnects never extend deadlines or budgets",
+    "Late worker writes require a current fencing token and active run",
+    "Unknown remote outcomes retain cost risk until reconciliation",
+    "Cancelled product state does not assert zero remote consumption"
+  ]
+}

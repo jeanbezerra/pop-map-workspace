@@ -1,0 +1,101 @@
+import type { MapComponent, MapRelationship } from "./model";
+
+// Dados inteiramente fictícios para revisão da experiência. Não representam o tenant.
+export const demoComponents: MapComponent[] = [
+  {
+    id: "entry", name: "/aplicacao-a", kind: "ENTRY", status: "unknown",
+    technology: "Rota pesquisada", detail: "Ponto de partida da investigação no portal digital.",
+    externalId: "route:aplicacao-a", evidenceScope: "ROUTE",
+    evidence: "Contexto informado nesta sessão. O vínculo técnico é demonstrativo.",
+    owner: "Canais digitais", position: { x: 20, y: 205 },
+  },
+  {
+    id: "frontend", name: "Portal digital", kind: "FRONTEND", status: "healthy",
+    technology: "React · Next.js", detail: "Frontend compartilhado por diferentes jornadas digitais.",
+    latency: "184 ms", errorRate: "0,12%", requests: "12,4 mil",
+    externalId: "FRONTEND-DEMO-001", evidenceScope: "FRONTEND",
+    evidence: "Exemplo de associação do frontend. Não comprova todas as chamadas da rota pesquisada.",
+    owner: "Experiência digital", position: { x: 280, y: 205 },
+  },
+  {
+    id: "gateway", name: "API gateway", kind: "SERVICE", status: "healthy",
+    technology: "Spring Cloud Gateway", detail: "Entrada de requisições para os serviços de negócio.",
+    latency: "42 ms", errorRate: "0,08%", requests: "28,6 mil",
+    externalId: "SERVICE-DEMO-002", evidenceScope: "FRONTEND",
+    evidence: "Relação de chamada ilustrativa do frontend para o gateway.",
+    owner: "Plataforma", position: { x: 540, y: 205 },
+  },
+  {
+    id: "quote", name: "Cotação auto", kind: "SERVICE", status: "critical",
+    technology: "Java · Spring Boot", detail: "Processa cotações de seguro auto e consulta regras de precificação.",
+    latency: "842 ms", errorRate: "3,8%", requests: "8,2 mil",
+    externalId: "SERVICE-DEMO-003", evidenceScope: "SERVICE",
+    evidence: "Exemplo: p95 acima do SLO fictício de 500 ms e problema ilustrativo P-2408.",
+    owner: "Seguro auto", position: { x: 810, y: 70 }, replicaCount: 3,
+  },
+  {
+    id: "identity", name: "Identidade", kind: "SERVICE", status: "healthy",
+    technology: "Keycloak", detail: "Valida identidades e autorização nas jornadas digitais.",
+    latency: "68 ms", errorRate: "0,02%", requests: "16,1 mil",
+    externalId: "SERVICE-DEMO-004", evidenceScope: "SERVICE",
+    evidence: "Métricas e relação de chamada fictícias, na mesma janela de demonstração.",
+    owner: "Identidade e acesso", position: { x: 810, y: 350 },
+  },
+  {
+    id: "pricing", name: "Precificação", kind: "SERVICE", status: "warning",
+    technology: "Java · Spring Boot", detail: "Aplica regras e calcula o prêmio da proposta.",
+    latency: "610 ms", errorRate: "0,7%", requests: "7,9 mil",
+    externalId: "SERVICE-DEMO-005", evidenceScope: "SERVICE",
+    evidence: "Exemplo de dependência degradada correlacionada. Não demonstra causa raiz.",
+    owner: "Produtos e precificação", position: { x: 1080, y: 70 },
+  },
+  {
+    id: "fraud", name: "Antifraude", kind: "EXTERNAL", status: "unknown",
+    technology: "API de parceiro", detail: "Dependência externa com visibilidade limitada nesta coleta.",
+    externalId: "EXTERNAL-DEMO-006", evidenceScope: "SERVICE",
+    evidence: "Destino lógico ilustrativo. Ausência de métricas não significa indisponibilidade.",
+    owner: "Parceiro externo", position: { x: 1080, y: 350 },
+  },
+  {
+    id: "database", name: "Base de cotações", kind: "DATABASE", status: "healthy",
+    technology: "PostgreSQL 18", detail: "Destino lógico de persistência das cotações.",
+    latency: "24 ms", errorRate: "0,01%", requests: "19,3 mil",
+    externalId: "DATABASE-DEMO-007", evidenceScope: "SERVICE",
+    evidence: "Endpoint de dados fictício; não representa a topologia primário/réplica.",
+    owner: "Dados transacionais", position: { x: 1350, y: 70 },
+  },
+  {
+    id: "events", name: "Eventos de proposta", kind: "MESSAGING", status: "healthy",
+    technology: "Kafka · tópico", detail: "Canal assíncrono para eventos da jornada de proposta.",
+    externalId: "MESSAGING-DEMO-008", evidenceScope: "SERVICE",
+    evidence: "Publicação assíncrona ilustrativa; a linha não representa request HTTP.",
+    owner: "Integração", position: { x: 1350, y: 350 },
+  },
+  {
+    id: "workload", name: "cotacao-auto", kind: "WORKLOAD", status: "healthy",
+    technology: "Deployment · 3/3 prontos", detail: "Agrupa três pods fictícios de execução do serviço.",
+    externalId: "K8S-WORKLOAD-DEMO-009", evidenceScope: "INFRASTRUCTURE",
+    evidence: "Exemplo de infraestrutura. Três pods não comprovam três domínios de falha.",
+    owner: "Plataforma SRE", position: { x: 810, y: 610 }, replicaCount: 3,
+  },
+  {
+    id: "host", name: "worker-pool-a", kind: "HOST", status: "healthy",
+    technology: "Kubernetes · nó", detail: "Recurso de execução demonstrativo associado ao workload.",
+    externalId: "HOST-DEMO-010", evidenceScope: "INFRASTRUCTURE",
+    evidence: "Inventário ilustrativo e parcial. Um recurso observado não confirma SPOF.",
+    owner: "Plataforma SRE", position: { x: 1080, y: 610 },
+  },
+];
+
+export const demoRelations: MapRelationship[] = [
+  { id: "r1", source: "entry", target: "frontend", kind: "BELONGS_TO", label: "associado a" },
+  { id: "r2", source: "frontend", target: "gateway", kind: "CALLS" },
+  { id: "r3", source: "gateway", target: "quote", kind: "CALLS", degraded: true },
+  { id: "r4", source: "gateway", target: "identity", kind: "CALLS" },
+  { id: "r5", source: "quote", target: "pricing", kind: "CALLS", degraded: true },
+  { id: "r6", source: "quote", target: "fraud", kind: "CALLS" },
+  { id: "r7", source: "pricing", target: "database", kind: "CALLS" },
+  { id: "r8", source: "pricing", target: "events", kind: "CALLS", label: "publica em" },
+  { id: "r9", source: "quote", target: "workload", kind: "RUNS_ON" },
+  { id: "r10", source: "workload", target: "host", kind: "RUNS_ON" },
+];
