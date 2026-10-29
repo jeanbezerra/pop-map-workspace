@@ -20,7 +20,7 @@ Os resultados abaixo correspondem à implementação local e não à integraçã
 | --- | --- |
 | TypeScript | Compilador 7 e build Next/API 6 sem erros |
 | ESLint | Sem erros/avisos no código da aplicação |
-| Jest / Testing Library | 42 cenários, incluindo fluxo de busca/cancelamento, contexto/ciclos, histórico corrompido, ajuda sem requests, SSR Griffel e filtros responsivos |
+| Jest / Testing Library | 43 cenários, incluindo fluxo de busca/cancelamento, contexto/ciclos, histórico corrompido, ajuda sem requests, SSR Griffel, filtros responsivos e estabilidade dos tipos do React Flow |
 | Build de produção | Next standalone e cópia de assets concluídos |
 | HTTP standalone | Página sob `/react-ssr-corp-srep-pop-map` retorna 200 |
 | Entrada pela raiz | `/` redireciona com 307 para o prefixo, que retorna 200; assets preservam o prefixo |
@@ -28,7 +28,7 @@ Os resultados abaixo correspondem à implementação local e não à integraçã
 | Estilos SSR | 21 blocos Griffel no head e zero no body, verificados em desenvolvimento reiniciado e HTML de produção |
 | Dependências de produção | Auditoria npm sem vulnerabilidades reportadas no momento da verificação |
 
-Testes de canvas no fluxo usam substituto para isolar a aplicação. Eles não validam geometria, contraste, zoom ou performance do React Flow em um browser real. Há testes da ajuda real com Fluent, sem substituição dos componentes do painel.
+Testes de canvas no fluxo do workspace usam substituto para isolar a aplicação. Um teste específico monta o React Flow real e observa os registros recebidos, verificando que seleção, novos dados e filtros não trocam os renderers nem remontam a área do mapa. Nenhum desses testes valida geometria, contraste, zoom ou performance em um browser real. Há testes da ajuda real com Fluent, sem substituição dos componentes do painel.
 
 Os testes dos filtros verificam formulário único, preservação de valores ao reabrir, limpeza, tipos condicionais, ausência de requests e assinatura do breakpoint. A geometria visual continua pendente de inspeção em browser: a superfície automatizada `iab` não estava disponível nesta sessão.
 
@@ -39,6 +39,14 @@ O provider repetia a folha inteira em cada callback de streaming do Next. A corr
 Quatro testes de regressão exercitam CSS real, reidratação em DOM isolado, rerender e instâncias independentes. Os quatro falham com o código anterior e passam com a correção. Os callbacks do Next são simulados nesses testes; a presença dos estilos somente no head foi confirmada também no HTML real de desenvolvimento e produção. Navegação/hidratação em um browser real continuam fora dessa prova.
 
 Os servidores antigo standalone e de desenvolvimento que disputavam a porta 3000 foram encerrados; uma nova instância de desenvolvimento foi iniciada. Recarregar completamente a página descarta cópias de CSS que já tenham ficado no DOM do navegador. A URL canônica inclui `/react-ssr-corp-srep-pop-map`. O 404 da raiz era separado do Griffel e foi corrigido por redirecionamento temporário, sem remover o prefixo corporativo ou fixar um host.
+
+### Aviso React Flow #002 durante desenvolvimento
+
+`nodeTypes` já era uma constante de módulo; não há `edgeTypes` personalizado. O React Flow compara as referências dos componentes registrados. A edição do mesmo módulo pode recriar `memo(ComponentCard)` enquanto Fast Refresh preserva o estado anterior, o que é uma causa provável do aviso observado. [React Flow — erro #002](https://reactflow.dev/learn/troubleshooting/common-errors#it-looks-like-you-have-created-a-new-nodetypes-or-edgetypes-object).
+
+O módulo do canvas usa `@refresh reset`, diretiva documentada no guia Fast Refresh do Next instalado, para remontar seu escopo quando o arquivo é editado. Isso pode reiniciar o zoom durante edição do código; seleção, filtros e atualização normal de dados mantêm o mapa montado. Não houve mudança de dependências ou supressão do diagnóstico.
+
+O teste específico verifica referências e persistência do mapa com o componente real. O bundle CommonJS usado pelo Jest não inclui o diagnóstico de desenvolvimento #002; portanto o teste não afirma reproduzir Fast Refresh nem verificar o console do navegador.
 
 ## Fluent UI React
 

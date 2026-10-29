@@ -1,5 +1,9 @@
 "use client";
 
+// @refresh reset
+// Ao editar este módulo, recrie o canvas junto do renderer memoizado do nó.
+// Sem isso, Fast Refresh preserva o registro antigo do React Flow e pode emitir #002.
+
 import { memo, useMemo, type ReactElement } from "react";
 import {
   Badge,
@@ -306,6 +310,7 @@ const ComponentCard = memo(function ComponentCard({ data, selected }: NodeProps<
   );
 });
 
+// Registro estável durante seleção, filtros, zoom e demais renders normais.
 const nodeTypes = { component: ComponentCard };
 
 function ViewControls(): ReactElement {
